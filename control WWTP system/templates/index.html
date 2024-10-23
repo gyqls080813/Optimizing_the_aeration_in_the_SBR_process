@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concentration Input</title>
+    <script>
+        function closeWindow() {
+            window.open('','_self').close();  // 창 닫기
+        }
+    </script>
+</head>
+<body>
+    <h1>농도 입력</h1>
+    <form method="POST" action="/" onsubmit="setTimeout(closeWindow, 1000)">
+        <label for="concentration">농도 (ppm): </label>
+        <input type="text" id="concentration" name="concentration" value="{{ concentration }}">
+        <button type="submit">입력</button>
+    </form>
+    <p>현재 입력된 농도: {{ concentration if concentration else '미입력' }}</p>
+</body>
+</html>
