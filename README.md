@@ -24,7 +24,14 @@ First, the control WWTP system code is used to control the SBR process with a Ra
 GPIO와 연결된 기기들을 작동시키는 역할을 한다. 각 GPIO는 Raspberry Pi2에 알맞는 포트를 참고해서 연결시켰다. 또한 shared_data.py에 실시간 펌프 상태를 전송시키는 역할을 한다. 해당 파일에서는 1hour로 최적화된 SBR 공정에 맞게 작성되었다. 따라서 SBR process를 자동화 시키기를 원한다면, 시간과 GPIO를 고려하여 수정 후 사용하면 된다.<br><br><br>
 1.4 shared_data.py<br><br>
 데이터를 종합하는 파이썬 파일이다. ammonia_detect.py와 pump_control.py에서 받아온 데이터를 종합하고, main.py에 보내 csv파일에 작성하도록 한다. <br><br><br>
-1. control WWTP system<br><br>
-
+1. Manually adjusted baseline model<br><br>
+1.1 main.py<br><br>
+control WWTP system의 main.py와 동일한 역할을 한다. 이때 flask를 열어 해당 cycle의 ammonia concentration을 입력받는 코드가 포함된다.<br><br><br>
+1.2 ammonia_detect.py<br><br>
+control WWTP system의 ammonia_detect.py와 동일한 역할을 한다.<br><br><br>
+1.3 pump_control.py<br><br>
+control WWTP system의 pump_control.py와 동일한 역할을 한다. 단, aeration time은 aeration_adjust.py에 의해 결정된다. <br><br><br>
+1.4 shared_data.py<br><br>
+데이터를 종합하는 파이썬 파일이다. ammonia_detect.py와 pump_control.py에서 받아온 데이터를 종합하고, main.py에 보내 csv파일에 작성하도록 한다. <br><br><br>
 
 ![회로물방울_이민엽](https://github.com/user-attachments/assets/cffb9b2f-6133-42a1-aefb-f07712bb287a)
