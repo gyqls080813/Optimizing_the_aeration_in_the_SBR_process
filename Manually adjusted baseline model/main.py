@@ -5,6 +5,7 @@ import RPi.GPIO as GPIO
 import shared_data
 import pump_control  # import pump_control  # ㅎ프 제어 모듈
 import ammonia_detect  # 암모니아 데이터 수집
+import app  # Flask 웹 서버 (농도 입력받는 기능)
 import webbrowser  # 웹 브라우저 자동 실행을 위한 모듈
 import csv
 
@@ -119,10 +120,30 @@ def run_pump():
         # 프로그램 종료 시 파일을 반드시 닫기
         close_csv_file()
 
+# Flask 서버를 300초 후에 실행하는 함수
+def delayed_flask_start():
+    print("5분 후 Flask 서버를 실행합니다...")
+    time.sleep(300)  # 300초 대기
+    flask_thread = threading.Thread(target=app.start_flask)
+    flask_thread.daemon = True  # Flask 서버가 백그라운드에서 실행되도록 설정
+    flask_thread.start()
+
+    # Flask 서버 시작 후 웹 브라우저 열기
+    webbrowser.open("http://localhost:5000")
+
 def run_main():
     
     # GPIO 핀 설정
     pump_control.setup_pins()
+
+    # 첫 번째 루프인지 확인 (CSV 파일 기반)
+    if pump_control.is_first_cycle():
+        print("첫 번째 루프입니다. Flask 서버를 생략합니다.")
+    else:
+        # 첫 번째 루프가 아닌 경우 Flask 서버 실행
+        flask_delay_thread = threading.Thread(target=delayed_flask_start)
+        flask_delay_thread.start()
+        print("Flask 서버 실행 중... 농도를 입력할 수 있습니다.")
 
     # 암모니아 데이터 수집 스레드 실행
     ammonia_thread = threading.Thread(target=ammonia_detect.main_loop)
