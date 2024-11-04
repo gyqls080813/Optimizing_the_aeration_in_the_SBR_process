@@ -1,10 +1,10 @@
 # Advanced wastewater treatment
 
 <img src="./Image/SBR process.png" align="right" width="40%"/>
-<br><br>
+<br><br><br><br><br><br><br>
 Advanced wastewater treatment is a highly modernized process designed to efficiently remove nitrogen and phosphorus from wastewater. Among these methods, the SBR (Sequence Batch Reactor) process allows for sequential water treatment in batch reactions, enabling precise time-based control. <br><br>
 In this study, we optimized the aeration time in the SBR wastewater treatment process. To achieve this, we adjusted the aeration period to reach a specific level of nitrification before stopping aeration. The extent of nitrification was monitored by measuring the ammonia concentration in the effluent using an RGB sensor.
-<br><br><br>
+<br><br><br><br><br><br><br>
 
 # Code Guide
 The 'Optimizing the Aeration in the SBR Process' repository contains code aimed at achieving this goal. Each code module is designed to operate using the Raspberry Pi 2. The code is structured as follows:
