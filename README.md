@@ -42,7 +42,7 @@ After all pumps have been activated, this file saves sensor data for five minute
 2.7 aeration_adjust.py<br><br>
 This file serves the same role as pump_control.py in the control WWTP system. An additional feature is determining aeration time, which is established by aeration_adjust.py. For this, the standard for sensor data is measured at 1 mg/L each time. The term "manual adjustment" in this study refers to the practice of measuring and altering this standard directly.<br><br><br>
 4. Controlled Reinforcement Learning(DQN) model<br>
-<img src="./Image/DQN simulation.png" align="right" width="50%"/>
+<img src="./Image/DQN simulation.png" align="mid" width="100%"/>
 The section on Controlled Reinforcement Learning (DQN) model currently only has simulation code implemented. It was created to see how well the DQN model copes with an environment similar to the actual one.<br><br><br>
 3.1 SBR_Environment.py<br><br>
 This file simulates the actual SBR environment we use. The incoming concentration is randomly specified every 50 times. In the case of a stabilized cycle of 1L, the inflow and existing volume are diluted in a 1:23 ratio. Thus, the inflow is calculated as 1, and the existing amount as 23 to determine the starting ammonia concentration. An equation for the effluent ammonia based on aeration time and incoming ammonia concentration has also been created.<br><br><br>
@@ -55,8 +55,8 @@ This is the model we used. This code includes both the reinforcement learning mo
 3.5 mlp_regression_pretrain.py<br><br>
 This is the code that trained the MLP model. The training data is the same as that from Timegan. The number of epochs was set to 10,000.<br><br><br>
 3.6 main.py<br><br>
-This is the file that operates all the code. It loads the models and determines the reward structure. In this case, for the first and second cycles, the aeration time is specified before operation. This is because, in the actual environment, there is no previous data for these two cycles, so a fixed value of 900 is applied.<br><br><br>
-<img src="./Image/log.svg" align="left" width="60%"/><br><br><br>
+This is the file that operates all the code. It loads the models and determines the reward structure. In this case, for the first and second cycles, the aeration time is specified before operation. This is because, in the actual environment, there is no previous data for these two cycles, so a fixed value of 900 is applied.<br><br><br><br><br><br><br>
+<img src="./Image/log.svg" align="left" width="60%"/><br>
 Minyeop Lee<br><br>
 Affiliation.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Eco Friendly Bio Lab<br>
