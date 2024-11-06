@@ -15,16 +15,60 @@ The 'Optimizing the Aeration in the SBR Process' repository contains code aimed 
 <br>
 Each code module serves the following functions:<br><br><br>
 1. control WWTP system<br><br>
+<img src="./Image/sbr automatic system.png" align="right" width="50%"/>
 First, the control WWTP system code is used to control the SBR process with a Raspberry Pi 2. The pump and stirring mechanisms are controlled via GPIO connections. The details for each part of the code are as follows:<br><br><br>
 1.1 main.py<br><br>
-모든 코드를 종합하여 실행하는 파이썬 파일입니다. shared_data.py에 종합적인 데이터가 입력되면 해당 데이터를 기반으로 RGB sensor 데이터를 csv파일에 기록 및 저장합니다. 또한 pump_control.py에 작성된 것과 같이 SBR system을 작동시킵니다. 또한 1cycle이 진행되면 Raspberry Pi를 재부팅시켜 오류를 방지합니다.<br><br><br>
+This is the main Python file that integrates all the code. When comprehensive data is input into shared_data.py, it records and saves RGB sensor data into a CSV file based on that data. Additionally, it operates the SBR system as described in pump_control.py. After one cycle is completed, it restarts the Raspberry Pi to prevent errors.<br><br><br>
 1.2 ammonia_detect.py<br><br>
-아두이노 포트를 관리하여 정상적으로 연결하도록 기능한다. 또한 RGB 센서와 연결되어 들어오는 RGB 데이터를 받아오는 역할을 한다. 이렇게 들어온 데이터는 shared_data.py에 전송되어 csv 파일에 작성되도록 한다.<br><br><br>
+This file manages the Arduino port to ensure proper connection. It also connects to the RGB sensor to receive incoming RGB data. This data is sent to shared_data.py to be logged into the CSV file.<br><br><br>
 1.3 pump_control.py<br><br>
-GPIO와 연결된 기기들을 작동시키는 역할을 한다. 각 GPIO는 Raspberry Pi2에 알맞는 포트를 참고해서 연결시켰다. 또한 shared_data.py에 실시간 펌프 상태를 전송시키는 역할을 한다. 해당 파일에서는 1hour로 최적화된 SBR 공정에 맞게 작성되었다. 따라서 SBR process를 자동화 시키기를 원한다면, 시간과 GPIO를 고려하여 수정 후 사용하면 된다.<br><br><br>
+This file operates devices connected to GPIO. Each GPIO is connected according to the appropriate ports for Raspberry Pi 2. It also sends real-time pump status to shared_data.py. This file is optimized for the SBR process set to one hour. Therefore, if you want to automate the SBR process, you can modify it considering time and GPIO.<br><br><br>
 1.4 shared_data.py<br><br>
-데이터를 종합하는 파이썬 파일이다. ammonia_detect.py와 pump_control.py에서 받아온 데이터를 종합하고, main.py에 보내 csv파일에 작성하도록 한다. <br><br><br>
-1. control WWTP system<br><br>
+This is the Python file that aggregates data. It consolidates data received from ammonia_detect.py and pump_control.py and sends it to main.py for logging into the CSV file.<br><br><br>
+2. Manually adjusted baseline model<br><br>
+<img src="./Image/Manually adjusted baseline model.png" align="right" width="50%"/>
+2.1 main.py<br><br>
+This file serves the same function as the main.py of the control WWTP system. It includes code to open Flask and receive input for ammonia concentration for the cycle.<br><br><br>
+2.2 ammonia_detect.py<br><br>
+This file performs the same role as ammonia_detect.py in the control WWTP system.<br><br><br>
+2.3 sensor_logging.py<br><br>
+This file serves the same function as ammonia_detect.py in the control WWTP system.<br><br><br>
+2.4 pump_control.py<br><br>
+This file functions the same as pump_control.py in the control WWTP system. An additional feature is determining aeration time, which is established by aeration_adjust.py. It also includes code to write to the CSV file.<br><br><br>
+2.5 shared_data.py<br><br>
+This file serves the same role as shared_data.py in the control WWTP system. It has been modified to add a variable to include sensor values based on concentration using timestamp = None.<br><br><br>
+2.6 sensor_logging.py<br><br>
+After all pumps have been activated, this file saves sensor data for five minutes during the settling time and averages it before saving it to average_sensor_data.csv. This function is utilized in pump_control.py to enter measurement times for collecting more data.<br><br><br>
+2.7 aeration_adjust.py<br><br>
+This file serves the same role as pump_control.py in the control WWTP system. An additional feature is determining aeration time, which is established by aeration_adjust.py. For this, the standard for sensor data is measured at 1 mg/L each time. The term "manual adjustment" in this study refers to the practice of measuring and altering this standard directly.<br><br><br>
+4. Controlled Reinforcement Learning(DQN) model<br>
+<img src="./Image/DQN simulation.png" align="right" width="50%"/>
+The section on Controlled Reinforcement Learning (DQN) model currently only has simulation code implemented. It was created to see how well the DQN model copes with an environment similar to the actual one.<br><br><br>
+3.1 SBR_Environment.py<br><br>
+This file simulates the actual SBR environment we use. The incoming concentration is randomly specified every 50 times. In the case of a stabilized cycle of 1L, the inflow and existing volume are diluted in a 1:23 ratio. Thus, the inflow is calculated as 1, and the existing amount as 23 to determine the starting ammonia concentration. An equation for the effluent ammonia based on aeration time and incoming ammonia concentration has also been created.<br><br><br>
+3.2 Timegan.py<br><br>
+This file has been trained using data from the actual SBR reactor operation. The training was conducted for 10,000 epochs. The data located in ./data is an example of the trained data. Only data from 3300 to 3600 were used for the training.<br><br><br>
+3.3 generation_timedata.py<br><br>
+This section loads the trained Timegan to generate time-series data for desired concentrations. The trained model is located in ./model/timegan.<br><br><br>
+3.4 main_model.py<br><br>
+This is the model we used. This code includes both the reinforcement learning model (DQN) and the concentration prediction model (MLP).<br><br><br>
+3.5 mlp_regression_pretrain.py<br><br>
+This is the code that trained the MLP model. The training data is the same as that from Timegan. The number of epochs was set to 10,000.<br><br><br>
+3.6 main.py<br><br>
+This is the file that operates all the code. It loads the models and determines the reward structure. In this case, for the first and second cycles, the aeration time is specified before operation. This is because, in the actual environment, there is no previous data for these two cycles, so a fixed value of 900 is applied.<br><br><br>
+<img src="./Image/log.svg" align="left" width="60%"/><br><br><br>
+Minyeop Lee<br><br>
+Affiliation.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Eco Friendly Bio Lab<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Division of Environmental Energy Engineering<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Yonsei University<br><br>
+Location.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Baekwoon Hall, Room 123<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1, Yonseidae-gil<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Wonju, Gangwon Special Self-Governing Province<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; South Korea<br><br>
+Contact.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; E-mail	: gyqls0808133@gmail.com<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GitHub	: github.com/gyqls080813<br>
 
 
-![회로물방울_이민엽](https://github.com/user-attachments/assets/cffb9b2f-6133-42a1-aefb-f07712bb287a)
