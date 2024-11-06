@@ -1,7 +1,7 @@
 # Advanced wastewater treatment
 
 <img src="./Image/SBR process.png" align="right" width="40%"/>
-<br><br><br><br><br><br><br>
+<br><br>
 Advanced wastewater treatment is a highly modernized process designed to efficiently remove nitrogen and phosphorus from wastewater. Among these methods, the SBR (Sequence Batch Reactor) process allows for sequential water treatment in batch reactions, enabling precise time-based control. <br><br>
 In this study, we optimized the aeration time in the SBR wastewater treatment process. To achieve this, we adjusted the aeration period to reach a specific level of nitrification before stopping aeration. The extent of nitrification was monitored by measuring the ammonia concentration in the effluent using an RGB sensor.
 <br><br><br><br><br><br><br>
@@ -42,7 +42,7 @@ After all pumps have been activated, this file saves sensor data for five minute
 2.7 aeration_adjust.py<br><br>
 This file serves the same role as pump_control.py in the control WWTP system. An additional feature is determining aeration time, which is established by aeration_adjust.py. For this, the standard for sensor data is measured at 1 mg/L each time. The term "manual adjustment" in this study refers to the practice of measuring and altering this standard directly.<br><br><br>
 4. Controlled Reinforcement Learning(DQN) model<br>
-<img src="./Image/DQN simulation.png" align="right" width="60%"/>
+<img src="./Image/DQN simulation.png" align="right" width="50%"/>
 The section on Controlled Reinforcement Learning (DQN) model currently only has simulation code implemented. It was created to see how well the DQN model copes with an environment similar to the actual one.<br><br><br>
 3.1 SBR_Environment.py<br><br>
 This file simulates the actual SBR environment we use. The incoming concentration is randomly specified every 50 times. In the case of a stabilized cycle of 1L, the inflow and existing volume are diluted in a 1:23 ratio. Thus, the inflow is calculated as 1, and the existing amount as 23 to determine the starting ammonia concentration. An equation for the effluent ammonia based on aeration time and incoming ammonia concentration has also been created.<br><br><br>
