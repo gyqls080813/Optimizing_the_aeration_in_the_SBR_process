@@ -1,4 +1,5 @@
 # Advanced wastewater treatment
+<img width="1400" height="1050" alt="unnamed" src="https://github.com/user-attachments/assets/38bd1e01-c9ee-4e7e-bdcc-c521a3b4996d" />
 
 <img src="./Image/SBR process.png" align="right" width="40%"/>
 <br><br>
