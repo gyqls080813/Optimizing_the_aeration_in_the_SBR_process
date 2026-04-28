@@ -157,7 +157,7 @@ def main():
             total_reward = rewards.mean().item()
             # 탐색 비율 조정
             agent.adjust_exploration(total_reward)
-            agent.memorize(previous_sensor_data_tensor, selected_action, total_reward)
+            agent.memorize(previous_sensor_data_tensor, selected_action, total_reward, current_sensor_data_tensor)
             if len(agent.memory) > batch_size:
                 loss = agent.replay(batch_size)
 

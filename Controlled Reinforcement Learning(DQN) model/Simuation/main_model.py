@@ -12,7 +12,7 @@ class DQNLSTMModel(nn.Module):
         self.state_size = state_size
         self.action_size = action_size
         self.memory = deque(maxlen=2000)
-        self.gamma = 0.95    # discount rate
+        self.gamma = 0.95    # 할인율: 미래 보상의 현재 가치 반영
         self.epsilon = 1.0  # exploration rate
         self.epsilon_min = 0.4
         self.epsilon_decay = 0.995
@@ -40,7 +40,6 @@ class DQNLSTMModel(nn.Module):
         elif reward > self.high_reward_threshold:
             # 높은 보상이 나오면 탐색 비율을 줄이고 감쇠율을 조정하여 수렴을 유도
             self.epsilon = max(self.epsilon_min, self.epsilon * 0.99)
-            self.epsilon_min = 0.01
             self.epsilon_decay = 0.995
 
         # 안정된 탐색을 위해 일정 에피소드 동안 조정 유지
@@ -55,8 +54,8 @@ class DQNLSTMModel(nn.Module):
         # Q-값은 보상 범위에 맞게 제한 없이 출력 (Sigmoid 제거)
         return x
 
-    def memorize(self, state, action, reward):
-        self.memory.append((state, action, reward))
+    def memorize(self, state, action, reward, next_state):
+        self.memory.append((state, action, reward, next_state))
         
 
     def act(self, state):
@@ -78,9 +77,12 @@ class DQNLSTMModel(nn.Module):
         
         minibatch = random.sample(self.memory, batch_size)
         states, targets_f = [], []
-        for state, action, reward in minibatch:
-            # Set target as reward
-            target = reward
+        for state, action, reward, next_state in minibatch:
+            # 정석 DQN: target = reward + gamma * max(Q(next_state))
+            next_state_batch = next_state.unsqueeze(0)
+            with torch.no_grad():
+                next_q_values = self(next_state_batch)
+            target = reward + self.gamma * torch.max(next_q_values).item()
             
             # Add batch dimension
             state = state.unsqueeze(0)
