@@ -102,22 +102,18 @@ def close_csv_file():
     except Exception as e:
         print(f"Error closing CSV file: {e}")
 
-# 팔프 실행 함수
+# 펌프 실행 함수
 def run_pump():
     pump_control.setup_pins()  # GPIO 핀 설정
     try:
         print("Starting pump control process")
-        pump_control.run_pump_sequence()  # pump_control.py에 정의된 팔프 제어 함수 실행
-        # 프로그램 종료 시 파일을 반드시 닫기
-        close_csv_file()
-        print("Rebooting system...")
-        time.sleep(1)
-        os.system('sudo reboot')  # 시스템 재부팅 명령
+        pump_control.run_pump_sequence()  # pump_control.py에 정의된 펌프 제어 함수 실행
     except Exception as e:
         print(f"Error during pump operation: {e}")
     finally:
-        # 프로그램 종료 시 파일을 반드시 닫기
-        close_csv_file()
+        # 펌프 작업 완료 후, 로깅 스레드에 안전한 종료 신호 전달
+        print("Pump sequence finished. Signaling threads to stop...")
+        shared_data.stop_thread = True
 
 def run_main():
     
@@ -128,7 +124,7 @@ def run_main():
     ammonia_thread = threading.Thread(target=ammonia_detect.main_loop)
     ammonia_thread.start()
 
-    # 팔프 실행 스레드 시작
+    # 펌프 실행 스레드 시작
     pump_thread = threading.Thread(target=run_pump)
     pump_thread.start()
 
@@ -136,12 +132,18 @@ def run_main():
     log_thread = threading.Thread(target=log_realtime_data)
     log_thread.start()
 
-    # 모든 스레드 종료 대기
+    # 모든 스레드 종료 대기 (로깅 스레드가 CSV를 안전하게 닫을 때까지 대기)
     pump_thread.join()
     log_thread.join()
 
-    # 프로그램 종료 시 CSV 파일 닫기
+    # 모든 스레드 종료 확인 후 CSV 파일 닫기
     close_csv_file()
+    print("All threads terminated. CSV file safely closed.")
+
+    # 안전하게 모든 자원이 정리된 후 시스템 재부팅
+    print("Rebooting system...")
+    time.sleep(1)
+    os.system('sudo reboot')  # 시스템 재부팅 명령
 
 if __name__ == "__main__":
     try:

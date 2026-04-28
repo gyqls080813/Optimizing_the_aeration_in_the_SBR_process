@@ -52,8 +52,7 @@ class DQNLSTMModel(nn.Module):
         lstm_out = lstm_out[:, -1, :]
         x = torch.relu(self.fc1(lstm_out))
         x = self.fc2(x)
-        # Output scaled to range [0, 900]
-        x = torch.sigmoid(x)
+        # Q-값은 보상 범위에 맞게 제한 없이 출력 (Sigmoid 제거)
         return x
 
     def memorize(self, state, action, reward):
@@ -62,8 +61,8 @@ class DQNLSTMModel(nn.Module):
 
     def act(self, state):
         if np.random.rand() <= self.epsilon:
-            # Exploration: randomly choose a value between 0 and 900
-            return np.random.uniform(0, 900)
+            # Exploration: 0~899 사이의 정수를 무작위 선택 (np.bincount 호환)
+            return np.random.randint(0, 900)
         
         self.eval()
         with torch.no_grad():
