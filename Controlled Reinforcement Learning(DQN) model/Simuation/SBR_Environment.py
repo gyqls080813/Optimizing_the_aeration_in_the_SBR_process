@@ -16,18 +16,16 @@ class SBR_Environment:
         ]
         self.current_formula = self.formulas[0]
 
-    def reset(self):
-        """매 에피소드마다 환경 초기화"""
-        self.current_episode += 1
-        print(f"Current episode: {self.current_episode}")  # 디버깅을 위한 출력
-        if self.current_episode % 50 == 0:
+    def reset(self, episode):
+        """매 에피소드마다 환경 초기화 (에피소드 번호 기반)"""
+        self.current_episode = episode
+        if episode % 50 == 0:
             self.start_concentration = random.randint(35, 40)
-            print(f"Start concentration updated to: {self.start_concentration}")  # 디버깅을 위한 출력
-        if self.current_episode % 2000 == 0:
-            # 현재 에피소드 수에 따라 순서대로 공식 선택
-            formula_index = (self.current_episode // 2000) % len(self.formulas)
+            print(f"Start concentration updated to: {self.start_concentration}")
+        if episode % 2000 == 0:
+            formula_index = (episode // 2000) % len(self.formulas)
             self.current_formula = self.formulas[formula_index]
-            print(f"Current formula updated to formula index: {formula_index}")  # 디버깅을 위한 출력
+            print(f"Current formula updated to formula index: {formula_index}")
         return self.start_concentration
 
     def step(self, current_concentration, aeration_time=None):

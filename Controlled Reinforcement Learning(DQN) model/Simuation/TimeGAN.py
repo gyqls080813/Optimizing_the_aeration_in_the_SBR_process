@@ -87,8 +87,7 @@ def get_hyperparameters():
     hyperparameters = {
         'noise_dim': 100,
         'sensor_dim': 4,
-        'pump_status_dim': 8,
-        'condition_dim': 10,
+        'condition_dim': 2,  # 농도(1) + 시간(1). 펌프 상태는 Status3에서 항상 0이므로 제거
         'num_epochs': 3000,
         'batch_size': 64,
         'learning_rate_G': 0.0003,
@@ -152,13 +151,13 @@ def train_timegan_pipeline_sequential(data, device):
                 batch_size = sensor_values.size(0)
 
                 sensor_values = sensor_values.to(device)
-                pump_status = pump_status.to(device)
                 concentration = concentration.to(device)  # 음수로 변환된 농도 값
                 time_in_seconds = time_in_seconds.to(device)
 
                 noise = torch.randn(batch_size, noise_dim, device=device)
 
-                condition = torch.cat((pump_status, concentration, time_in_seconds), dim=1)
+                # 조건 벡터: 농도 + 시간 (펌프 상태는 Status3에서 항상 0이므로 제거)
+                condition = torch.cat((concentration, time_in_seconds), dim=1)
 
                 optimizer_D.zero_grad()
                 real_labels = torch.ones(batch_size, 1, device=device)

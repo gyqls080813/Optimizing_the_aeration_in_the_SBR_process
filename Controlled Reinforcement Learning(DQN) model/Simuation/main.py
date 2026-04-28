@@ -37,9 +37,8 @@ def main():
     batch_size = 32
     agent = DQNLSTMModel(4, 900).to(device)
 
-    # 회귀 모델 초기화 및 저장 경로 설정
-    mlp_model_path = mlp_model_path
-    regression_model = OnlineMLPRegressor(model_path=mlp_model_path)  # 저장된 모델 불러오기
+    # 회귀 모델 초기화 (전역 mlp_model_path에서 저장된 모델 불러오기)
+    regression_model = OnlineMLPRegressor(model_path=mlp_model_path)
 
     # main 함수에서 호출 예시
     model_path = timegan_model_path
@@ -71,15 +70,7 @@ def main():
 
     for episode in range(3, num_step + 1):
         weight_factor = 0.99**(episode - 2) 
-        if episode % 50 == 0:
-            env.start_concentration = random.randint(35, 40)
-            print(f"Start concentration updated to: {env.start_concentration}")
-        
-        if episode % 2000 == 0:
-            # 에피소드에 따라 순서대로 공식 업데이트
-            formula_index = (episode // 2000) % len(env.formulas)
-            env.current_formula = env.formulas[formula_index]
-            print(f"Current formula updated to formula index: {formula_index}")
+        env.reset(episode)  # 환경 초기화 (농도 갱신, 공식 변경 등)
 
         if episode == 3:
             previous_concentration = second_concentration
